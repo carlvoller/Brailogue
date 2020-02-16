@@ -2,6 +2,7 @@
 from flask import Flask
 from flask import render_template
 from flask import request
+from youtube_transcript_api import YouTubeTranscriptApi
 
 import speech_recognition as sr
 
@@ -15,6 +16,7 @@ def home():
 
 @app.route("/text/<text>", methods=["GET", "POST"])
 def translateBraille(text):
+    print(text)
     outputBraille = ""
     text = text.lower()
     brailleDict = {
@@ -29,14 +31,17 @@ def translateBraille(text):
         "6": "⠋", "7": "⠛", "8": "⠓", "9": "⠊",
         ",": "⠂", ";": "⠆", ":": "⠒", ".": "⠲",
         "?": "⠦", "!": "⠖", "‘": "⠄", "“": "⠄⠶",
-        "“": "⠘⠦", "”": "⠘⠴", "‘": "⠄⠦", "’": "⠄⠴",
+        "“": "⠘⠦", "”": "⠘⠴", "‘": "⠄", "’": "⠄",
         "(": "⠐⠣", ")": "⠐⠜", "/": "⠸⠌", "\\": "⠸⠡",
-        "-": "⠤", " ": " ", "%": "⠨⠴", "@": "⠈⠁", "$": "⠈⠎"
+        "-": "⠤", " ": " ", "%": "⠨⠴", "@": "⠈⠁", "$": "⠈⠎", "'": "⠄"
     }
     isNumber = False
     quoteLocation = -1
     try:
         for i in text:
+            if i == "\n":
+                outputBraille += "\n"
+                continue
             if i == '"':
                 if quoteLocation == -1:
                     quoteLocation = len(outputBraille)
@@ -62,21 +67,42 @@ def translateBraille(text):
                     outputBraille += "⠰"
                     outputBraille += brailleDict[i]
             else:
-                outputBraille += brailleDict[i]
-    except:
+                if i in brailleDict:
+                    outputBraille += brailleDict[i]
+    except Exception:
         return "Text contains character that is not recognised."
     return outputBraille
 
 @app.route("/speech", methods=["GET", "POST"])
 def speechToText():
+    try:
+        if request.method == 'POST':
+            f = request.files['file']
+            f.save(f.filename)
+            r = sr.Recognizer()
+            test = sr.AudioFile(f.filename)
+            with test as source:
+                audio = r.record(source)
+                return translateBraille(r.recognize_google(audio))
+    except:
+        return "sorry can record again we kinda suck :p"
+
+@app.route("/file", methods=["GET", "POST"])
+def fileUpload():
     if request.method == 'POST':
         f = request.files['file']
-        f.save(f.filename)
-        r = sr.Recognizer()
-        test = sr.AudioFile(f.filename)
-        with test as source:
-            audio = r.record(source)
-            return translateBraille(r.recognize_google(audio))
+        return translateBraille(f.read().decode('utf8'))
+
+@app.route("/getTranscript/<videoID>", methods=["GET", "POST"])
+def getTranscript(videoID):
+    transcription = YouTubeTranscriptApi.get_transcript(videoID, languages=["en"])
+    output = ""
+    for i in transcription:
+        output += translateBraille(u'{}'.format(i["text"]))
+        output += "\n"
+    return output
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

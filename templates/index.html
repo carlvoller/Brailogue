@@ -73,6 +73,10 @@
 					<div class="micDiv" id="recordBtn" onclick="isRecording ? stopRecording() : startRecording()">
 						<i class="material-icons">mic</i>
 					</div>
+					<input type="file" id="imgupload" style="display:none"/> 
+					<div class="micDiv" onclick="document.getElementById('imgupload').click()">
+						<i class="material-icons">insert_drive_file</i>
+					</div>
 				</div>
 				<div class="outputBox">
 					<textarea id="output" class="textArea" placeholder="Braille output here..." readonly></textarea>
@@ -97,6 +101,23 @@
 				};
 				xhttp.open("GET", `/text/${encodeURIComponent(text)}`, true);
 				xhttp.send();
+			}
+
+			document.getElementById("imgupload").onchange = function() {
+				let file = document.getElementById("imgupload").files[0];
+				var xhr = new XMLHttpRequest();
+				xhr.onload = function (e) {
+					if (this.readyState === 4) {
+						console.log("Server returned: ", e.target.responseText);
+						document.getElementById("output").value = e.target.responseText;
+					}
+				};
+				var fd = new FormData();
+				console.log(file);
+				fd.append("file", file, file.name);
+				xhr.open("POST", "/file", true);
+				xhr.send(fd);
+				document.getElementById("imgupload").value = "";
 			}
 		</script>
 	</body>
