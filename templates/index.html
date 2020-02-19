@@ -40,6 +40,7 @@
 				align-items: center;
 				justify-content: center;
 				width: 42px;
+				min-width: 36px;
 				background-color: rgb(212, 227, 219);
 				margin-left: 10px;
 				cursor: pointer;
@@ -59,6 +60,32 @@
 				padding: 10px;
 				font-size: 24px;
 			}
+
+			.toggled {
+				background-color: #C3073F;
+				color: white;
+			}
+
+			.toggled::placeholder {
+				color: white;
+				opacity: 1;
+			}
+
+			#downloadBtn {
+				position: relative;
+				right: 10px;
+				bottom: 40px;
+				float: right;
+				cursor: pointer;
+			}
+
+			#downloadBtn:hover {
+				color: darkgrey;
+			}
+
+			#downloadBtn > i {
+				font-size: 30px;
+			}
 		</style>
 	</head>
 	<body>
@@ -68,10 +95,13 @@
 				<p style="font-size: 34px;">Your go-to Braille translating solution.</p>
 				<div style="display: flex;width: 40%">
 					<div style="width: 100%">
-						<input type="text" class="textBox" placeholder="你干嘛？" onkeyup="sendTextReq(event)" />
+						<input type="text" class="textBox" id="textBox" placeholder="你干嘛？" onkeyup="sendTextReq(event)" />
 					</div>
 					<div class="micDiv" id="recordBtn" onclick="isRecording ? stopRecording() : startRecording()">
 						<i class="material-icons">mic</i>
+					</div>
+					<div class="micDiv" onclick="toggleYoutube()">
+						<img src="/youtube.svg" style="width: 80%" />
 					</div>
 					<input type="file" id="imgupload" style="display:none"/> 
 					<div class="micDiv" onclick="document.getElementById('imgupload').click()">
@@ -80,6 +110,7 @@
 				</div>
 				<div class="outputBox">
 					<textarea id="output" class="textArea" placeholder="Braille output here..." readonly></textarea>
+					<span id="downloadBtn" onclick="downloadContent()"><i class="material-icons">file_download</i></span>
 				</div>
 			</div>
 		</div>
@@ -87,11 +118,35 @@
 		<div class="pattern" style="bottom: 0"></div>
 		<script src="/record.js"></script>
 		<script>
+			window.isYoutube = false;
+			function toggleYoutube() {
+				let tB = document.getElementById('textBox');
+				tB.classList.contains("toggled") ? tB.classList.remove("toggled") : tB.classList.add("toggled");
+				tB.placeholder = tB.classList.contains("toggled") ? "你的YouTube Link在哪儿？" : "你干嘛？";
+				window.isYoutube = !window.isYoutube;
+				sendTextReq({ target: tB });
+			}
 			function sendTextReq(e) {
 				let val = e.target.value;
 				if(val == "") { return document.getElementById("output").value = ""; }
-				translateBraille(val);
+				!window.isYoutube ? translateBraille(val) : sendYoutubeTranscriptReq(val);
 			}
+
+			function downloadContent() {
+				window.open(`${location.origin}/downloadFile/${encodeURIComponent(document.getElementById("output").value)}`);
+			}
+			
+			function sendYoutubeTranscriptReq(link) {
+				let xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						document.getElementById("output").value = this.responseText;
+					}
+				};
+				xhttp.open("GET", `/youtube/${btoa(btoa(link))}`, true);
+				xhttp.send();
+			}
+
 			function translateBraille(text) {
 				let xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {

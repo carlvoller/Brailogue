@@ -20,6 +20,15 @@ function startRecording() {
 
     isRecording = true;
 
+    recordButton.style.backgroundColor = "red";
+    recordButton.style.color = "white";
+
+    let tB = document.getElementById('textBox');
+    tB.classList.remove("toggled");
+    tB.placeholder = "你干嘛？";
+    tB.value = "";
+    window.isYoutube = false;
+
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
         console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
 
@@ -58,6 +67,9 @@ function stopRecording() {
     rec.stop();
 
     isRecording = false;
+
+    recordButton.style.backgroundColor = "";
+    recordButton.style.color = "";
 
     //stop microphone access
     gumStream.getAudioTracks()[0].stop();
