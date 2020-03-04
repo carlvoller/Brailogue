@@ -25,14 +25,12 @@ function startRecording() {
 
     let tB = document.getElementById('textBox');
     tB.classList.remove("toggled");
-    tB.placeholder = "你干嘛？";
+    tB.placeholder = "Input English text here";
     tB.value = "";
     window.isYoutube = false;
 
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
-        console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
-
-        console.log("hi");
+        console.log("Initialising magic...");
         
         audioContext = new AudioContext();
 

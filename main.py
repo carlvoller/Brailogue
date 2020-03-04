@@ -90,7 +90,7 @@ def speechToText():
                 audio = r.record(source)
                 return translateBraille(r.recognize_google(audio))
     except:
-        return "oh no... our speech wecogniser did an oopsie whoopsie. can you twy that again uwu"
+        return "oh no something happened... maybe try that again?"
 
 # uwu thats a BiG FiLe you got there owO
 @app.route("/file", methods=["GET", "POST"])

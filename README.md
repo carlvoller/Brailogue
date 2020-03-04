@@ -18,6 +18,11 @@ Run flask webserver (Will be run on http://localhost:5000)
 python3 main.py
 ```
 
+## Libraries used
+- Flask and its associated libraries
+- SpeechRecognition
+- youtube_transcript_api
+
 ## Contributing
 I only accept contributions in cash and paypal.
 

@@ -99,7 +99,7 @@
 				<p style="font-size: 34px;">Your go-to Braille translating solution.</p>
 				<div style="display: flex;width: 40%">
 					<div style="width: 100%">
-						<input type="text" class="textBox" id="textBox" placeholder="你干嘛？" onkeyup="sendTextReq(event)" />
+						<input type="text" class="textBox" id="textBox" placeholder="Input English text here" onkeyup="sendTextReq(event)" />
 					</div>
 					<div class="micDiv" id="recordBtn" onclick="isRecording ? stopRecording() : startRecording()">
 						<i class="material-icons">mic</i>
@@ -126,7 +126,7 @@
 			function toggleYoutube() {
 				let tB = document.getElementById('textBox');
 				tB.classList.contains("toggled") ? tB.classList.remove("toggled") : tB.classList.add("toggled");
-				tB.placeholder = tB.classList.contains("toggled") ? "你的YouTube Link在哪儿？" : "你干嘛？";
+				tB.placeholder = tB.classList.contains("toggled") ? "Input Youtube link here." : "Input English text here";
 				window.isYoutube = !window.isYoutube;
 				sendTextReq({ target: tB });
 			}
