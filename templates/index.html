@@ -56,6 +56,10 @@
 			.textArea {
 				width: calc(100% - 20px);
 				height: calc(100% - 20px);
+				min-width: calc(100% - 20px);
+				min-height: calc(100% - 20px);
+				max-width: calc(100% - 20px);
+				max-height: calc(100% - 20px);
 				border: none;
 				padding: 10px;
 				font-size: 24px;
@@ -109,7 +113,7 @@
 					</div>
 				</div>
 				<div class="outputBox">
-					<textarea id="output" class="textArea" placeholder="Braille output here..." readonly></textarea>
+					<textarea id="output" class="textArea" placeholder="Braille output here..." readonly ></textarea>
 					<span id="downloadBtn" onclick="downloadContent()"><i class="material-icons">file_download</i></span>
 				</div>
 			</div>

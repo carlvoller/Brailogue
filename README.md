@@ -1,6 +1,6 @@
 # Brailogue
 
-An English voice/text to Braille translator made in Python.
+An English voice/text to Braille translator made in Python. Comes with youtube caption and external file translation support.
 
 ## Setup
 

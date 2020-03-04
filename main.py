@@ -1,5 +1,8 @@
 # coding=utf8
-from flask import Flask, render_template, request, send_file
+from flask import Flask
+from flask import render_template
+from flask import request
+from flask import send_file
 import base64
 from youtube_transcript_api import YouTubeTranscriptApi
 
@@ -9,10 +12,12 @@ app = Flask(__name__,
         static_url_path='', 
         static_folder='static')
 
+# uwu do you like my clothes?
 @app.route("/")
 def home():
     return render_template('index.html')
 
+# owO? whats this? i see you're looking through my code uwu.
 @app.route("/text/<text>", methods=["GET", "POST"])
 def translateBraille(text):
     print(text)
@@ -72,6 +77,7 @@ def translateBraille(text):
         return "Text contains character that is not recognised."
     return outputBraille
 
+# uwu this is how we listen to your beautiful voice
 @app.route("/speech", methods=["GET", "POST"])
 def speechToText():
     try:
@@ -84,14 +90,16 @@ def speechToText():
                 audio = r.record(source)
                 return translateBraille(r.recognize_google(audio))
     except:
-        return "sorry can record again we kinda suck :p"
+        return "oh no... our speech wecogniser did an oopsie whoopsie. can you twy that again uwu"
 
+# uwu thats a BiG FiLe you got there owO
 @app.route("/file", methods=["GET", "POST"])
 def fileUpload():
     if request.method == 'POST':
         f = request.files['file']
         return translateBraille(f.read().decode('utf8'))
 
+# owO thats a pretty obscene video, does mc-kun like that type of stuff?
 @app.route("/getTranscript/<videoID>", methods=["GET", "POST"])
 def getTranscript(videoID):
     try:
@@ -104,6 +112,7 @@ def getTranscript(videoID):
         output += "\n"
     return output
 
+# uwu thats a LONG link you got there owO
 @app.route("/youtube/<videoLink>", methods=["GET", "POST"])
 def youtube(videoLink):
     try:
@@ -114,6 +123,7 @@ def youtube(videoLink):
     except:
         return "Video Link Invalid"
 
+# uwu fill my file up with your content baby
 @app.route("/downloadFile/<content>", methods=["GET", "POST"])
 def downloadFile(content):
     f = open("./output.txt", "w")
@@ -121,6 +131,7 @@ def downloadFile(content):
     f.close()
     return send_file("./output.txt", as_attachment=True)
 
+# uwu are you trying to hide from me????
 def decodeBase64(text):
     base64_message = text
     base64_bytes = base64_message.encode('utf8')
