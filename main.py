@@ -102,10 +102,11 @@ def speechToText():
             test = sr.AudioFile(f.filename)
             with test as source:
                 audio = r.record(source)
-                return translateBraille(r.recognize_google(audio))
+                text = r.recognize_google(audio)
+                return { "braille": translateBraille(text), "text": text }
     except:
         # Catch speech recogniser failure.
-        return "oh no something happened... maybe try that again?"
+        return { "braille": "oh no something happened... maybe try that again?", "text": "" }
 
 # Process uploaded file content to translate.
 @app.route("/file", methods=["GET", "POST"])

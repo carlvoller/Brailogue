@@ -18,6 +18,10 @@ Run flask webserver (Will be run on http://localhost:5000)
 python3 main.py
 ```
 
+## Disclaimer
+
+Speech Recogniser is not the most accurate. Expect some inaccuracies especially with non trans-atlantic english accents.
+
 ## Libraries used
 - Flask and its associated libraries
 - SpeechRecognition

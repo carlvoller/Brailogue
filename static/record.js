@@ -81,7 +81,9 @@ function uploadToServer(blob) {
     xhr.onload = function (e) {
         if (this.readyState === 4) {
             console.log("Server returned: ", e.target.responseText);
-            document.getElementById("output").value = e.target.responseText;
+            let res = JSON.parse(e.target.responseText);
+            document.getElementById("output").value = res.braille;
+            document.getElementById('textBox').value = res.text;
         }
     };
     var fd = new FormData();
