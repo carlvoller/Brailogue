@@ -12,17 +12,20 @@ app = Flask(__name__,
         static_url_path='', 
         static_folder='static')
 
-# uwu do you like my clothes?
+# Routes / to index.html (User interface)
 @app.route("/")
 def home():
     return render_template('index.html')
 
-# owO? whats this? i see you're looking through my code uwu.
+# The translator function. Handles the entire translation process basically.
 @app.route("/text/<text>", methods=["GET", "POST"])
 def translateBraille(text):
-    print(text)
     outputBraille = ""
+
+    # Braille has no upper or lower case so we convert everything to lower.
     text = text.lower()
+
+    # Dictionary of braille characters to english/ascii characters.
     brailleDict = {
         "a": "⠁", "b": "⠃", "c": "⠉", "d": "⠙",
         "e": "⠑", "f": "⠋", "g": "⠛", "h": "⠓",
@@ -42,10 +45,16 @@ def translateBraille(text):
     isNumber = False
     quoteLocation = -1
     try:
+        # Translate character by character.
         for i in text:
+
+            # Handles next line characters.
             if i == "\n":
                 outputBraille += "\n"
                 continue
+            
+            # Quotations have special behaviour in braille. Single quote mark is different if it has a corresponding closing mark.
+            # This function handles replacing the quotation character based on the previously stored quoteLocation
             if i == '"':
                 if quoteLocation == -1:
                     quoteLocation = len(outputBraille)
@@ -57,6 +66,8 @@ def translateBraille(text):
                     tempOutput.append("⠴")
                     outputBraille = "".join(tempOutput)
                 continue
+            
+            # Numbers have a special character to denote that it is a number.
             if i.isdigit() and isNumber:
                 outputBraille += brailleDict[i]
             elif i.isdigit():
@@ -74,13 +85,16 @@ def translateBraille(text):
                 if i in brailleDict:
                     outputBraille += brailleDict[i]
     except Exception:
+
+        # In case anything fails or an unhandleable character is present, show an error message
         return "Text contains character that is not recognised."
     return outputBraille
 
-# uwu this is how we listen to your beautiful voice
+# Speech Recogniser API to detect words from wav audio.
 @app.route("/speech", methods=["GET", "POST"])
 def speechToText():
     try:
+        # Relatively straight forward don't think needs explanation
         if request.method == 'POST':
             f = request.files['file']
             f.save(f.filename)
@@ -90,32 +104,37 @@ def speechToText():
                 audio = r.record(source)
                 return translateBraille(r.recognize_google(audio))
     except:
+        # Catch speech recogniser failure.
         return "oh no something happened... maybe try that again?"
 
-# uwu thats a BiG FiLe you got there owO
+# Process uploaded file content to translate.
 @app.route("/file", methods=["GET", "POST"])
 def fileUpload():
     if request.method == 'POST':
         f = request.files['file']
         return translateBraille(f.read().decode('utf8'))
 
-# owO thats a pretty obscene video, does mc-kun like that type of stuff?
+# Gets the youtube video captions using the videoID.
 @app.route("/getTranscript/<videoID>", methods=["GET", "POST"])
 def getTranscript(videoID):
     try:
+        # Query youtube for captions
         transcription = YouTubeTranscriptApi.get_transcript(videoID, languages=["en"])
     except:
         return "Video Link Invalid"
     output = ""
     for i in transcription:
+        # Translate text to Braille
         output += translateBraille(u'{}'.format(i["text"]))
         output += "\n"
     return output
 
-# uwu thats a LONG link you got there owO
+# Retrieves base64 URI encoded youtube link from URL and converts to a normal link to retrieve youtube video ID.
 @app.route("/youtube/<videoLink>", methods=["GET", "POST"])
 def youtube(videoLink):
     try:
+        # Links are base64 encoded in the url as characters such as /, :, & or % in URL conflict.
+        # We did it twice as base64 does it weirdly for some reason but twice seemed to work.
         videoLink = decodeBase64(decodeBase64(videoLink))
         videoID = videoLink.split("?v=")
         videoID = videoID[1].split("&")[0]
@@ -123,15 +142,17 @@ def youtube(videoLink):
     except:
         return "Video Link Invalid"
 
-# uwu fill my file up with your content baby
+# Handles file downloads
 @app.route("/downloadFile/<content>", methods=["GET", "POST"])
 def downloadFile(content):
+    # Save translated content to file
     f = open("./output.txt", "w")
     f.write(content)
     f.close()
+    # Send file as response to request.
     return send_file("./output.txt", as_attachment=True)
 
-# uwu are you trying to hide from me????
+# Basic Base64 decode function
 def decodeBase64(text):
     base64_message = text
     base64_bytes = base64_message.encode('utf8')
