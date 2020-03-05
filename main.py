@@ -3,6 +3,8 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask import send_file
+from flask import jsonify
+import sys
 import base64
 from youtube_transcript_api import YouTubeTranscriptApi
 
@@ -103,10 +105,12 @@ def speechToText():
             with test as source:
                 audio = r.record(source)
                 text = r.recognize_google(audio)
-                return { "braille": translateBraille(text), "text": text }
+                res = { "braille": translateBraille(text), "text": text }
+                return jsonify(res)
     except:
+        print(sys.exc_info()[0])
         # Catch speech recogniser failure.
-        return { "braille": "oh no something happened... maybe try that again?", "text": "" }
+        return jsonify({ "braille": "oh no something happened... maybe try that again?", "text": "" })
 
 # Process uploaded file content to translate.
 @app.route("/file", methods=["GET", "POST"])
