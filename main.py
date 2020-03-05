@@ -108,7 +108,6 @@ def speechToText():
                 res = { "braille": translateBraille(text), "text": text }
                 return jsonify(res)
     except:
-        print(sys.exc_info()[0])
         # Catch speech recogniser failure.
         return jsonify({ "braille": "oh no something happened... maybe try that again?", "text": "" })
 
