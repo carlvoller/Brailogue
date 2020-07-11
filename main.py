@@ -155,7 +155,7 @@ def downloadFile(content):
     f.write(content)
     f.close()
     # Send file as response to request.
-    return send_file("./output.txt", as_attachment=True),,os.remove("./output.txt")
+    return send_file("./output.txt", as_attachment=True),os.remove("./output.txt")
 
 # Basic Base64 decode function
 def decodeBase64(text):
